@@ -41,14 +41,21 @@ app.get('/api/persons', (req, res) => {
 })
 
 app.get('/api/persons/:id', (req, res) => {
-    let id = req.params.id
-    let foundPerson = persons.find(person => person.id == id)
+    const id = req.params.id
+    const foundPerson = persons.find(person => person.id == id)
 
     if (foundPerson) {
         res.json(foundPerson)
     } else {
         res.status(404).end()
     }
+})
+
+app.delete('/api/persons/:id', (req, res) => {
+    const id = req.params.id
+    persons = persons.filter(person => person.id != id)
+
+    res.status(204).end()
 })
 
 app.get('/info', (req, res) => {
