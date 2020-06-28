@@ -40,6 +40,17 @@ app.get('/api/persons', (req, res) => {
     res.json(persons)
 })
 
+app.get('/api/persons/:id', (req, res) => {
+    let id = req.params.id
+    let foundPerson = persons.find(person => person.id == id)
+
+    if (foundPerson) {
+        res.json(foundPerson)
+    } else {
+        res.status(404).end()
+    }
+})
+
 app.get('/info', (req, res) => {
     let personsText = `Phonebook has information for ${persons.length} people.`
     let timeText = new Date().toISOString()
