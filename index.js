@@ -2,6 +2,8 @@ const express = require('express')
 
 const app = express()
 
+app.use(express.json())
+
 let persons = [
     {
         "name": "Arto Hellas",
@@ -35,6 +37,10 @@ let persons = [
     }
 ]
 
+const generateId = () => {
+    return Math.floor(Math.random() * Math.floor(20000)) + 1
+}
+
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
@@ -58,6 +64,22 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end()
 })
 
+app.post('/api/persons', (req, res) => {
+    const payload = req.body
+
+    const name = payload.name
+    const number = payload.number
+
+    const createdPerson = {
+        name: name,
+        number: number,
+        id: generateId(),
+    }
+    persons = persons.concat(createdPerson)
+
+    res.json(createdPerson)
+})
+
 app.get('/info', (req, res) => {
     let personsText = `Phonebook has information for ${persons.length} people.`
     let timeText = new Date().toISOString()
@@ -69,3 +91,7 @@ const PORT = 3001
 app.listen(PORT, () => {
     console.log(`Phonebook backend running on port ${PORT}`)
 })
+
+function isString(x) {
+    return Object.prototype.toString.call(x) === "[object String]"
+}
