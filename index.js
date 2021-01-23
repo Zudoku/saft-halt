@@ -70,6 +70,18 @@ app.post('/api/persons', (req, res) => {
     const name = payload.name
     const number = payload.number
 
+    if (!isString(name) || !isString(number)) {
+        res.status(400)
+        res.send({ error: 'Bad request: You must provide name and number as string values!' })
+        return
+    }
+
+    if (persons.some((person) => person.name == name)) {
+        res.status(400)
+        res.send({ error: 'Bad request: Name is not unique!' })
+        return
+    }
+
     const createdPerson = {
         name: name,
         number: number,
@@ -92,6 +104,7 @@ app.listen(PORT, () => {
     console.log(`Phonebook backend running on port ${PORT}`)
 })
 
-function isString(x) {
+// https://stackoverflow.com/a/17772086
+const isString = (x) => {
     return Object.prototype.toString.call(x) === "[object String]"
 }
