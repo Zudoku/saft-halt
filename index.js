@@ -94,14 +94,15 @@ app.post('/api/persons', (req, res) => {
         return
     }
 
-    const createdPerson = {
+    const contactInformation = new ContactInformation({
         name: name,
         number: number,
-        id: generateId(),
-    }
-    persons = persons.concat(createdPerson)
+    })
 
-    res.json(createdPerson)
+    contactInformation.save().then(savedContactInformation => {
+        res.json(savedContactInformation)
+    })
+
 })
 
 app.get('/info', (req, res) => {
