@@ -38,11 +38,3 @@ const listPhoneNumbers = () => {
         mongoose.connection.close()
     })
 }
-
-if (process.argv.length == 3) {
-    listPhoneNumbers()
-} else if (process.argv.length == 5) {
-    const name = process.argv[3]
-    const number = process.argv[4]
-    addPhoneNumber(name, number)
-}
