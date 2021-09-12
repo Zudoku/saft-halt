@@ -80,6 +80,21 @@ app.delete('/api/persons/:id', (req, res, next) => {
     .catch(error => next(error))
 })
 
+app.put('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id
+    const body = req.body
+
+    const contactInformation = {
+        number: body.number
+    }
+
+    ContactInformation.findByIdAndUpdate(id, contactInformation, { new: true })
+    .then(updatedContactInformation => {
+      res.json(updatedContactInformation)
+    })
+    .catch(error => next(error))
+})
+
 app.post('/api/persons', (req, res, next) => {
     const payload = req.body
 
