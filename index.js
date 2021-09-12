@@ -14,40 +14,6 @@ app.use(express.static('build'))
 
 const ContactInformation = require('./models/contactInformation')
 
-let persons = [
-    {
-        "name": "Arto Hellas",
-        "number": "040-123456",
-        "id": 1
-    },
-    {
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523",
-        "id": 2
-    },
-    {
-        "name": "Dan Abramov",
-        "number": "12-43-234345",
-        "id": 3
-    },
-    {
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122",
-        "id": 4
-    },
-    {
-        "name": "Ilkka Lipsanen",
-        "number": "+358-60-60606060",
-        "id": 5
-    },
-    {
-        "name": "skkrt",
-        "number": "12313",
-        "id": 7
-    }
-]
-
-
 app.get('/api/persons', (req, res, next) => {
     ContactInformation.find({})
     .then(contacts => {
@@ -107,11 +73,14 @@ app.post('/api/persons', (req, res, next) => {
         return
     }
 
+    /* ignore this part for now. 
+    "Tässä vaiheessa voit olla välittämättä siitä, onko tietokannassa jo henkilöä, jolla on sama nimi kuin lisättävällä."
     if (persons.some((person) => person.name == name)) {
         res.status(400)
         res.send({ error: 'Bad request: Name is not unique!' })
         return
     }
+    */
 
     const contactInformation = new ContactInformation({
         name: name,
@@ -127,10 +96,14 @@ app.post('/api/persons', (req, res, next) => {
 })
 
 app.get('/info', (req, res) => {
-    let personsText = `Phonebook has information for ${persons.length} people.`
-    let timeText = new Date().toISOString()
-    let responseText = `${personsText}\n\n${timeText}`
-    res.send(responseText)
+    ContactInformation.find({})
+    .then(contacts => {
+        let personsText = `Phonebook has information for ${contacts.length} people.`
+        let timeText = new Date().toISOString()
+        let responseText = `${personsText}\n\n${timeText}`
+        res.send(responseText)
+    })
+    .catch(error => next(error))
 })
 
 const errorHandler = (error, request, res, next) => {
