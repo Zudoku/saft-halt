@@ -47,36 +47,40 @@ let persons = [
     }
 ]
 
-const generateId = () => {
-    return Math.floor(Math.random() * Math.floor(20000)) + 1
-}
 
-
-app.get('/api/persons', (req, res) => {
-    ContactInformation.find({}).then(contacts => {
+app.get('/api/persons', (req, res, next) => {
+    ContactInformation.find({})
+    .then(contacts => {
         res.json(contacts)
-      })
+    })
+    .catch(error => next(error))
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     const id = req.params.id
-    const foundPerson = persons.find(person => person.id == id)
 
-    if (foundPerson) {
-        res.json(foundPerson)
-    } else {
+    ContactInformation.findById(id)
+    .then(foundContactInformation => {
+      if (foundContactInformation) {
+        res.json(foundContactInformation)
+      } else {
         res.status(404).end()
-    }
+      }
+    })
+    .catch(error => next(error))
 })
 
-app.delete('/api/persons/:id', (req, res) => {
+app.delete('/api/persons/:id', (req, res, next) => {
     const id = req.params.id
-    persons = persons.filter(person => person.id != id)
 
-    res.status(204).end()
+    ContactInformation.findByIdAndRemove(id)
+    .then(result => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const payload = req.body
 
     const name = payload.name
@@ -99,9 +103,11 @@ app.post('/api/persons', (req, res) => {
         number: number,
     })
 
-    contactInformation.save().then(savedContactInformation => {
+    contactInformation.save()
+    .then(savedContactInformation => {
         res.json(savedContactInformation)
     })
+    .catch(error => next(error))
 
 })
 
@@ -111,6 +117,18 @@ app.get('/info', (req, res) => {
     let responseText = `${personsText}\n\n${timeText}`
     res.send(responseText)
 })
+
+const errorHandler = (error, request, res, next) => {
+    console.error(error.message)
+  
+    if (error.name === 'CastError') {
+      return res.status(400).send({ error: 'malformatted id' })
+    }
+  
+    next(error)
+  }
+  
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
